@@ -1,4 +1,4 @@
-export const PASSPHRASE_LENGTH = 6;
+export const PASSPHRASE_LENGTH = 8;
 
 export const WORDLIST = [
 "abacate",

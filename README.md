@@ -1,44 +1,47 @@
-# 4ward 🚀
+<p align="center">
+  <img src="public/favicon.svg" width="96" height="96" alt="4ward logo">
+</p>
 
-**4ward** é uma ferramenta de transferência de dados segura e *air-gapped* que utiliza QR Codes dinâmicos para mover informações entre dispositivos sem a necessidade de conexão com a rede (Internet, Bluetooth ou Wi-Fi).
+<h1 align="center">4ward</h1>
 
-## ✨ Funcionalidades
-
-- 🔒 **Segurança Máxima:** Criptografia de ponta a ponta usando AES-GCM de 256 bits.
-- 🔑 **Derivação de Chave Robusta:** PBKDF2 com 600.000 iterações e *salts* aleatórios.
-- 🧩 **Protocolo UR (Uniform Resources):** Implementação de *Fountain Codes* que permite transferir grandes volumes de dados através de uma sequência infinita de QR Codes (podem ser lidos em qualquer ordem).
-- 📉 **Compressão Inteligente:** Utiliza `fflate` com um dicionário customizado otimizado para textos estruturados, reduzindo drasticamente o tamanho dos QR Codes.
-- 📱 **PWA (Progressive Web App):** Funciona totalmente offline e pode ser instalado no celular ou desktop.
-- 🛡️ **Privacidade por Design:** Nenhum dado sai do dispositivo. Todo o processamento pesado ocorre em *Web Workers* para manter a interface fluida.
-
-## 🛠️ Tech Stack
-
-- **Framework:** [Svelte 5](https://svelte.dev/) (utilizando Runes para reatividade de ponta)
-- **Linguagem:** TypeScript
-- **Estilização:** [Tailwind CSS 4](https://tailwindcss.com/)
-- **Build Tool:** Vite 8+
-- **Protocolo de Dados:** [@ngraveio/bc-ur](https://github.com/ngrave/bc-ur)
-- **Criptografia:** Web Crypto API
-- **Compressão:** fflate
-
-## 🚀 Como usar
-
-1. **Enviar:** Digite ou cole o texto no editor, gere uma frase de segurança (passphrase) e exiba o QR Code dinâmico.
-2. **Receber:** No outro dispositivo, abra o scanner, aponte para o QR Code e insira a frase de segurança correspondente para descriptografar os dados.
-
-## 📦 Desenvolvimento
-
-```bash
-# Instalar dependências
-pnpm install
-
-# Rodar em modo de desenvolvimento
-pnpm dev
-
-# Build para produção
-pnpm build
-```
+<p align="center">
+  <strong>Transferência de texto segura via QR Code, sem precisar de rede.</strong>
+</p>
 
 ---
 
-Desenvolvido com foco em segurança, privacidade e eficiência.
+O **4ward** transfere texto entre dispositivos sem conexão de rede. O texto é comprimido, criptografado com AES-GCM e exibido como QR Codes animados. No outro dispositivo, você digita a passphrase e escaneia o QR para reconstruir o texto original.
+
+## Como funciona
+
+1. **Enviar:** Digite o texto. Uma passphrase de 8 palavras é gerada. O QR Code animado aparece ao lado.
+2. **Receber:** Digite a passphrase. Aponte a câmera para o QR Code. O texto aparece automaticamente.
+
+Alternativamente, você pode copiar o código Base64 e colar no receptor.
+
+## Por quê?
+
+Profissionais de saúde às vezes usam blocos de nota online para transferir informações de pacientes sem proteção. O 4ward resolve isso: todo o processamento é local, nenhum dado sai do dispositivo.
+
+## Tech Stack
+
+- [Svelte 5](https://svelte.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Vite 8](https://vitejs.dev/)
+- AES-GCM 256-bit via Web Crypto API
+- [Fountain Codes](https://github.com/ngrave/bc-ur) para QR sequencial
+- PWA (instalável, funciona offline)
+
+## Desenvolvimento
+
+```bash
+pnpm install
+pnpm dev
+```
+
+## Build
+
+```bash
+pnpm build
+```
