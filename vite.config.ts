@@ -4,12 +4,17 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
+import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
     basicSsl(),
     svelte(),
+    Icons({
+      compiler: 'svelte',
+      autoInstall: true,
+    }),
     nodePolyfills(),
     VitePWA({
       registerType: 'autoUpdate',

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { base64ToBytes } from '../core/mnemonic';
+  import { base64ToBytes } from '../../utils/encoding';
+  import { IconBiExclamationCircleFill, IconBiUnlockFill } from '../icons';
 
   let { onComplete } = $props<{ onComplete: (data: Uint8Array) => void }>();
 
@@ -13,7 +14,6 @@
     isProcessing = true;
     errorMsg = '';
     try {
-      // Remove all whitespaces and newlines to prevent failing due to copy/paste artifacts
       const cleanText = bulkText.replace(/[\s\r\n]+/g, '');
       if (/^[A-Za-z0-9+/=]+$/.test(cleanText)) {
         const data = base64ToBytes(cleanText);
@@ -21,9 +21,8 @@
       } else {
         errorMsg = "O conteúdo colado não parece ser um código válido do 4ward.";
       }
-    } catch (err: any) {
+    } catch {
       errorMsg = "Erro ao processar: verifique se copiou o código completo.";
-      console.error(err);
     } finally {
       isProcessing = false;
     }
@@ -43,7 +42,7 @@
 
   {#if errorMsg}
     <div class="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 py-2.5 px-4 text-sm rounded-xl mt-3 mb-3 animate-fade-in flex items-center gap-2 shadow-lg">
-      <i class="bi bi-exclamation-circle-fill"></i>{errorMsg}
+      <IconBiExclamationCircleFill />{errorMsg}
     </div>
   {/if}
 
@@ -56,7 +55,7 @@
       <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
       Processando...
     {:else}
-      <i class="bi bi-unlock-fill"></i>
+      <IconBiUnlockFill />
       Descriptografar
     {/if}
   </button>

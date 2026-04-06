@@ -1,4 +1,6 @@
-import { WORDLIST } from './wordlist';
+import { WORDLIST } from '../core/wordlist';
+
+// ─── Base64 ───
 
 export function bytesToBase64(bytes: Uint8Array): string {
   let binary = '';
@@ -12,7 +14,6 @@ export function bytesToBase64(bytes: Uint8Array): string {
 }
 
 export function base64ToBytes(base64: string): Uint8Array {
-  // Remove spaces, newlines, etc. before decoding
   const cleanBase64 = base64.replace(/[\s\r\n]+/g, '');
   const binary_string = atob(cleanBase64);
   const len = binary_string.length;
@@ -22,6 +23,8 @@ export function base64ToBytes(base64: string): Uint8Array {
   }
   return bytes;
 }
+
+// ─── Mnemonic (BIP-39-like, 11 bits per word) ───
 
 export function bytesToMnemonic(bytes: Uint8Array): string[] {
   const words: string[] = [];

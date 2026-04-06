@@ -1,47 +1,44 @@
-# Svelte + TS + Vite
+# 4ward 🚀
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+**4ward** é uma ferramenta de transferência de dados segura e *air-gapped* que utiliza QR Codes dinâmicos para mover informações entre dispositivos sem a necessidade de conexão com a rede (Internet, Bluetooth ou Wi-Fi).
 
-## Recommended IDE Setup
+## ✨ Funcionalidades
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+- 🔒 **Segurança Máxima:** Criptografia de ponta a ponta usando AES-GCM de 256 bits.
+- 🔑 **Derivação de Chave Robusta:** PBKDF2 com 600.000 iterações e *salts* aleatórios.
+- 🧩 **Protocolo UR (Uniform Resources):** Implementação de *Fountain Codes* que permite transferir grandes volumes de dados através de uma sequência infinita de QR Codes (podem ser lidos em qualquer ordem).
+- 📉 **Compressão Inteligente:** Utiliza `fflate` com um dicionário customizado otimizado para textos estruturados, reduzindo drasticamente o tamanho dos QR Codes.
+- 📱 **PWA (Progressive Web App):** Funciona totalmente offline e pode ser instalado no celular ou desktop.
+- 🛡️ **Privacidade por Design:** Nenhum dado sai do dispositivo. Todo o processamento pesado ocorre em *Web Workers* para manter a interface fluida.
 
-## Need an official Svelte framework?
+## 🛠️ Tech Stack
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+- **Framework:** [Svelte 5](https://svelte.dev/) (utilizando Runes para reatividade de ponta)
+- **Linguagem:** TypeScript
+- **Estilização:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Build Tool:** Vite 8+
+- **Protocolo de Dados:** [@ngraveio/bc-ur](https://github.com/ngrave/bc-ur)
+- **Criptografia:** Web Crypto API
+- **Compressão:** fflate
 
-## Technical considerations
+## 🚀 Como usar
 
-**Why use this over SvelteKit?**
+1. **Enviar:** Digite ou cole o texto no editor, gere uma frase de segurança (passphrase) e exiba o QR Code dinâmico.
+2. **Receber:** No outro dispositivo, abra o scanner, aponte para o QR Code e insira a frase de segurança correspondente para descriptografar os dados.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+## 📦 Desenvolvimento
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+```bash
+# Instalar dependências
+pnpm install
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+# Rodar em modo de desenvolvimento
+pnpm dev
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+# Build para produção
+pnpm build
 ```
+
+---
+
+Desenvolvido com foco em segurança, privacidade e eficiência.
