@@ -58,3 +58,6 @@ export async function decryptData(encryptedData: Uint8Array, passphraseWords: st
     w.postMessage({ id, type: 'decrypt', data: dataCopy, passphraseWords: cleanPassphrase }, [dataCopy.buffer]);
   });
 }
+
+// Re-export wipeMemory from its canonical location for backwards compatibility
+export { wipeMemory } from '../utils/memory';

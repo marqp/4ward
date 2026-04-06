@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { FountainDecoder } from '../core/ur';
+  import { IconBiArrowLeftRight, IconBiExclamationTriangle } from './icons';
 
   let { onComplete } = $props<{ onComplete: (data: Uint8Array) => void }>();
 
@@ -108,7 +109,7 @@
         class="absolute bottom-4 right-4 rounded-full px-4 py-2.5 z-30 shadow-lg border border-white/20 flex items-center gap-2 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-colors"
         onclick={handleSwitchCamera}
       >
-        <i class="bi bi-camera-rotate text-base"></i>
+        <IconBiArrowLeftRight class="text-base" />
         <span class="text-xs font-bold uppercase tracking-wider">Trocar Câmera</span>
       </button>
     {/if}
@@ -128,7 +129,7 @@
     </div>
     {#if errorMsg}
       <div class="mt-4 bg-rose-500/20 backdrop-blur-sm text-rose-200 py-2.5 px-4 text-sm border border-rose-500/30 rounded-xl font-medium shadow-lg flex items-center gap-2">
-        <i class="bi bi-exclamation-triangle"></i>{errorMsg}
+        <IconBiExclamationTriangle />{errorMsg}
       </div>
     {/if}
   </div>

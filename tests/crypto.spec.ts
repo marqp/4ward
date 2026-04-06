@@ -2,7 +2,7 @@ import { test, expect, describe } from 'vitest';
 import { compressAndTokenize, decompressAndDetokenize } from '../src/lib/core/compression.ts';
 import { encryptData, decryptData } from '../src/lib/core/crypto.ts';
 import { FountainEncoder, FountainDecoder } from '../src/lib/core/ur.ts';
-import { bytesToBase64, base64ToBytes, bytesToMnemonic, mnemonicToBytes } from '../src/lib/core/mnemonic.ts';
+import { bytesToBase64, base64ToBytes, bytesToMnemonic, mnemonicToBytes } from '../src/lib/utils/encoding.ts';
 import { WORDLIST } from '../src/lib/core/wordlist.ts';
 
 // ─── Original E2E tests ───
