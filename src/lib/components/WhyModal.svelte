@@ -12,14 +12,14 @@
 
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
   <!-- Backdrop -->
-  <button 
-    class="absolute inset-0 bg-slate-950/60 backdrop-blur-md border-none w-full h-full cursor-default" 
+  <div
+    class="absolute inset-0 bg-slate-950/60 backdrop-blur-md cursor-pointer"
     onclick={onClose}
-    aria-label="Fechar modal"
-  ></button>
+    aria-hidden="true"
+  ></div>
 
   <!-- Modal Content -->
-  <div class="bg-slate-900 border border-white/10 rounded-[2rem] shadow-2xl relative w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+  <div role="dialog" aria-modal="true" aria-labelledby="why-title" class="bg-slate-900 border border-white/10 rounded-[2rem] shadow-2xl relative w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
     <!-- Header Decor -->
     <div class="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
     
@@ -35,7 +35,7 @@
         <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
           <IconBiShieldLockFill class="text-2xl" />
         </div>
-        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight m-0">Segurança & Ética</h2>
+        <h2 id="why-title" class="text-2xl md:text-3xl font-bold text-white tracking-tight m-0">Segurança & Ética</h2>
       </div>
 
       <div class="space-y-6 text-slate-300 leading-relaxed text-lg">

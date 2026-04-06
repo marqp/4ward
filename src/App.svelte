@@ -15,6 +15,15 @@
   // ─── Persistence ───
   $effect(() => { saveText(textToSend); });
 
+  // ─── Deep Linking (#porque) ───
+  $effect(() => {
+    if (window.location.hash === '#porque') {
+      showWhyModal = true;
+      // Limpa o hash para não reabrir se o usuário fechar e recarregar
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  });
+
   // ─── Actions (delegated to service) ───
 
   async function handleSend() {

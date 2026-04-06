@@ -61,7 +61,9 @@
         <div class="bg-indigo-500/20 border border-indigo-400/30 w-10 h-10 flex items-center justify-center rounded-xl text-indigo-300 shadow-inner"><IconBiQrCode class="text-lg" /></div>
         <p class="font-bold m-0 text-indigo-300 uppercase tracking-widest text-xs">Escaneie o QR</p>
       </div>
-      <p class="text-white/60 text-sm leading-relaxed mb-0 pl-1">Aponte a câmera do dispositivo receptor para o código animado ao lado.</p>
+      <p class="text-white/60 text-sm leading-relaxed mb-0 pl-1">
+        <strong class="text-indigo-300 italic">De dentro do app</strong>, escaneie o QR. Aponte a câmera do dispositivo receptor para o código animado ao lado. Apenas abrir o aplicativo de câmera não irá funcionar.
+      </p>
     </div>
 
     <div class="mb-6 animate-slide-in" style="animation-delay: 0.2s;">
@@ -105,7 +107,7 @@
     </div>
     <div class="bg-rose-500/10 p-4 rounded-2xl border border-rose-500/20 text-center flex items-center justify-center min-h-[64px] shadow-inner">
       <span class="font-mono uppercase font-bold text-rose-300 text-base leading-relaxed break-words transition-all" style="letter-spacing: {showPassphrase ? '2px' : '4px'}; opacity: {showPassphrase ? 1 : 0.8};">
-        {showPassphrase ? passphrase.join(' ').toUpperCase() : '•••• •••• •••• •••• •••• ••••'}
+        {showPassphrase ? passphrase.join(' ').toUpperCase() : '•••• •••• •••• •••• •••• •••• •••• ••••'}
       </span>
     </div>
   </div>

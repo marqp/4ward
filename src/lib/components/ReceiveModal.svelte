@@ -81,7 +81,7 @@
       <IconBiXLg />
     </button>
 
-    <div class="flex flex-col h-full text-white w-[560px] max-w-full relative">
+    <div class="flex flex-col h-full text-white w-[800px] max-w-full relative">
       {#if receiveMethod === 'scan'}
         <ScanView
           onData={handleData}

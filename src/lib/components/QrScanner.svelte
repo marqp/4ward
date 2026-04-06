@@ -48,7 +48,7 @@
         triggerFlash();
         const completed = decoder.receivePart(decodedText);
         if (completed) {
-          console.log('Decoder complete!');
+          if (import.meta.env.DEV) console.log('Decoder complete!');
           const result = decoder.getResult();
           if (result) {
             stopScanner();
@@ -58,7 +58,7 @@
           progress = Math.round(decoder.getProgress() * 100);
           fragmentsReceived = decoder.getReceivedFragments();
           totalFragments = decoder.getTotalFragments();
-          console.log(`Fragment scanned: ${fragmentsReceived}/${totalFragments} (${progress}%) — part: ${partKey.substring(0, 50)}`);
+          if (import.meta.env.DEV) console.log(`Fragment scanned: ${fragmentsReceived}/${totalFragments} (${progress}%) — part: ${partKey.substring(0, 50)}`);
         }
       } catch (err: any) {
         console.error('Scanner decode error:', err);
