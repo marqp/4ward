@@ -42,7 +42,7 @@
 
     updateFrame();
     if (!isStatic) {
-      intervalId = setInterval(updateFrame, 200);
+      intervalId = setInterval(updateFrame, 250);
     }
 
     return () => { if (intervalId) clearInterval(intervalId); };

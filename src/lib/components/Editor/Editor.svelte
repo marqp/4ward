@@ -44,6 +44,13 @@
       <IconBiExclamationTriangleFill class="text-lg inline-block" />{error}
     </div>
   {/if}
+
+  <!-- Footer Disclaimer -->
+  <div class="mt-4 px-4 py-2 opacity-40 hover:opacity-80 transition-opacity">
+    <p class="text-[10px] text-slate-400 text-center leading-relaxed italic m-0">
+      A conferência da integridade e validade dos dados transmitidos é de responsabilidade exclusiva do usuário.
+    </p>
+  </div>
 </div>
 
 <!-- FABs -->

@@ -5,10 +5,12 @@
   import Editor from './lib/components/Editor/Editor.svelte';
   import SendModal from './lib/components/SendModal.svelte';
   import ReceiveModal from './lib/components/ReceiveModal.svelte';
+  import WhyModal from './lib/components/WhyModal.svelte';
 
   // ─── Local UI state only ───
   let textToSend = $state(loadText());
   let error = $state('');
+  let showWhyModal = $state(false);
 
   // ─── Persistence ───
   $effect(() => { saveText(textToSend); });
@@ -51,9 +53,21 @@
 <main class="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-100">
   <!-- Header -->
   <header class="bg-white/10 backdrop-blur-md border-b border-white/10 py-3 px-5 z-10 shadow-sm">
-    <div class="flex items-baseline gap-2">
-      <h1 class="text-xl font-bold text-white m-0 tracking-tight">4ward</h1>
-      <span class="text-white/70 text-sm font-medium">Transferência Segura</span>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/favicon.svg" alt="4ward logo" class="w-8 h-8 rounded-lg shadow-lg shadow-indigo-500/20" />
+        <div class="flex items-baseline gap-2">
+          <h1 class="text-xl font-bold text-white m-0 tracking-tight">4ward</h1>
+          <span class="text-white/70 text-sm font-medium">Transferência Segura</span>
+        </div>
+      </div>
+      
+      <button 
+        class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-bold transition-all active:scale-95 shadow-sm"
+        onclick={() => showWhyModal = true}
+      >
+        Por quê?
+      </button>
     </div>
   </header>
 
@@ -68,6 +82,10 @@
   />
 
   <!-- Modals (driven by store) -->
+  {#if showWhyModal}
+    <WhyModal onClose={() => showWhyModal = false} />
+  {/if}
+
   {#if transferStore.modalMode === 'send' && transferStore.activePayload}
     <SendModal
       payload={transferStore.activePayload}

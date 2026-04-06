@@ -56,8 +56,8 @@ export class Scanner {
     await this.html5QrCode.start(
       cameraId,
       {
-        fps: 20,
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
+        fps: 60,
+        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
           const minEdgePercentage = 0.85;
           const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
           const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
