@@ -64,9 +64,6 @@ export class Scanner {
           return { width: qrboxSize, height: qrboxSize };
         },
         aspectRatio: 1.0,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        }
       },
       this.onScanSuccessCallback,
       this.onScanFailureCallback

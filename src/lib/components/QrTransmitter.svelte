@@ -69,30 +69,27 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="d-flex justify-content-center align-items-center w-100 h-100">
+<div class="flex justify-center items-center w-full h-full">
   {#if qrDataUrl}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <img 
       src={qrDataUrl} 
       alt="Animated QR Code" 
-      class="img-fluid rounded-4 shadow-sm" 
-      style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" 
+      class="max-w-full max-h-full object-contain cursor-zoom-in rounded-3xl shadow-2xl bg-white p-3 md:p-4 border border-white/20" 
       onclick={() => isFullscreen = true}
     />
   {:else if errorMsg}
-    <div class="alert alert-danger mx-3 text-center border-0 rounded-4 shadow-sm py-4">
-      <i class="bi bi-exclamation-octagon fs-1 d-block mb-3"></i>
-      <h4 class="h5 fw-bold">Falha Crítica</h4>
-      <p class="mb-0 small">{errorMsg}</p>
-      <button class="btn btn-outline-danger btn-sm mt-3" onclick={() => window.location.reload()}>Recarregar App</button>
+    <div class="bg-rose-500/20 backdrop-blur-xl border border-rose-500/30 mx-4 text-center rounded-3xl shadow-2xl py-8 px-6 text-white w-full max-w-sm">
+      <i class="bi bi-exclamation-octagon text-5xl block mb-4 text-rose-400"></i>
+      <h4 class="text-lg font-bold mb-2">Falha Crítica</h4>
+      <p class="mb-0 text-sm text-rose-200">{errorMsg}</p>
+      <button class="mt-6 px-5 py-2.5 border border-rose-400/50 hover:bg-rose-500/30 text-rose-100 rounded-xl transition-colors text-sm font-medium shadow-lg" onclick={() => window.location.reload()}>Recarregar App</button>
     </div>
   {:else}
-    <div class="d-flex flex-column align-items-center justify-content-center text-primary w-100 h-100">
-      <div class="spinner-border mb-3" role="status" style="width: 3rem; height: 3rem;">
-        <span class="visually-hidden">Gerando QR...</span>
-      </div>
-      <span class="fw-medium text-secondary text-center px-4">Codificando payload seguro...</span>
+    <div class="flex flex-col items-center justify-center text-indigo-300 w-full h-full gap-5">
+      <div class="w-12 h-12 border-4 border-indigo-400/30 border-t-indigo-400 rounded-full animate-spin"></div>
+      <span class="font-medium text-white/70 text-center px-4 tracking-wide">Codificando payload seguro...</span>
     </div>
   {/if}
 </div>
@@ -101,15 +98,23 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div 
-    class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate-fade-in p-3 p-md-5" 
-    style="background-color: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 1050; cursor: zoom-out;"
+    class="fixed inset-0 flex items-center justify-center p-4 md:p-12 z-[60] cursor-zoom-out bg-black/80 backdrop-blur-2xl" 
     onclick={() => isFullscreen = false}
   >
     <img 
       src={qrDataUrl} 
       alt="Fullscreen Animated QR Code" 
-      class="bg-white rounded-4 shadow-lg p-2 p-md-3" 
-      style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; aspect-ratio: 1/1;" 
+      class="bg-white rounded-[2rem] shadow-2xl p-4 md:p-8 max-w-full max-h-full object-contain aspect-square animate-zoom-in" 
     />
   </div>
 {/if}
+
+<style>
+  .animate-zoom-in {
+    animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>

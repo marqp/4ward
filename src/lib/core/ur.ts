@@ -44,24 +44,58 @@ export class FountainDecoder {
   }
 
   receivePart(part: string): boolean {
-    // bc-ur espera minúsculas, mas recebemos maiúsculas para otimização do QR
-    this.decoder.receivePart(part.toLowerCase());
-    return this.decoder.isComplete() && this.decoder.isSuccess();
+    try {
+      // bc-ur expects lowercase, we receive uppercase for QR optimization
+      this.decoder.receivePart(part.toLowerCase().trim());
+      return this.decoder.isComplete() && this.decoder.isSuccess();
+    } catch {
+      return false;
+    }
   }
 
   getEstimatedPercent(): number {
     return this.decoder.estimatedPercentComplete();
   }
 
+  getProgress(): number {
+    try {
+      return this.decoder.getProgress ? this.decoder.getProgress() : 0;
+    } catch { return 0; }
+  }
+
+  getTotalFragments(): number {
+    try {
+      // URDecoder exposes expectedPartIndexes() which returns an array
+      const indexes = this.decoder.expectedPartIndexes ? this.decoder.expectedPartIndexes() : [];
+      return Array.isArray(indexes) ? indexes.length : 0;
+    } catch { return 0; }
+  }
+
+  getReceivedFragments(): number {
+    try {
+      const indexes = this.decoder.receivedPartIndexes ? this.decoder.receivedPartIndexes() : [];
+      return Array.isArray(indexes) ? indexes.length : 0;
+    } catch { return 0; }
+  }
+
   getResult(): Uint8Array | null {
     if (this.decoder.isComplete() && this.decoder.isSuccess()) {
       const ur = this.decoder.resultUR();
       const decoded = ur.decodeCBOR() as any;
+      
+      if (decoded instanceof Uint8Array) {
+        return decoded;
+      }
+      
       if (decoded && decoded.type === 'Buffer' && Array.isArray(decoded.data)) {
         return new Uint8Array(decoded.data);
-      } else {
-        return new Uint8Array(decoded);
       }
+
+      if (decoded && typeof decoded === 'object' && decoded.buffer instanceof ArrayBuffer) {
+        return new Uint8Array(decoded.buffer, decoded.byteOffset, decoded.byteLength);
+      }
+      
+      return new Uint8Array(decoded);
     }
     return null;
   }

@@ -1,18 +1,16 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { VitePWA } from 'vite-plugin-pwa';
-import purgeCSSPlugin from 'vite-plugin-purgecss';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     basicSsl(),
     svelte(),
     nodePolyfills(),
-    purgeCSSPlugin({
-      content: ['**/*.html', '**/*.svelte']
-    }),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
