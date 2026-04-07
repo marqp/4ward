@@ -71,13 +71,13 @@
   });
 </script>
 
-<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-2">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mb-2">
   {#each words as word, index}
-    <div class="relative">
+    <div class="relative min-w-[110px]">
       <input
         id={`word-${index}`}
         type="text"
-        class="w-full text-center bg-white/5 backdrop-blur-md border border-white/20 text-white placeholder-white/30 rounded-full shadow-inner font-medium px-3 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-sm h-11"
+        class="w-full text-center bg-white/5 backdrop-blur-md border border-white/20 text-white placeholder-white/30 rounded-full shadow-inner font-medium px-4 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-sm h-11 tracking-wide"
         placeholder={`${index + 1}`}
         value={words[index]}
         oninput={(e) => handleInput(index, e.currentTarget.value)}
