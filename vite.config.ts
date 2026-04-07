@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
-  base: '/4ward/',
+  base: './',
   plugins: [
     tailwindcss(),
     basicSsl(),
