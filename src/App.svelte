@@ -2,6 +2,7 @@
   import { loadText, saveText, clearText } from './lib/stores/textStore';
   import { transferStore } from './lib/stores/transferStore.svelte';
   import { compressAndEncrypt, copyToClipboard, decryptAndDecompress } from './lib/services/transferService';
+  import { wipeMemory } from './lib/utils/memory';
   import Editor from './lib/components/Editor/Editor.svelte';
   import SendModal from './lib/components/SendModal.svelte';
   import ReceiveModal from './lib/components/ReceiveModal.svelte';
@@ -11,6 +12,7 @@
   let textToSend = $state(loadText());
   let error = $state('');
   let showWhyModal = $state(false);
+  let isSending = $state(false);
 
   // ─── Persistence ───
   $effect(() => { saveText(textToSend); });
@@ -27,13 +29,18 @@
   // ─── Actions (delegated to service) ───
 
   async function handleSend() {
-    if (!textToSend.trim()) return;
+    if (!textToSend.trim() || isSending) return;
+    isSending = true;
     try {
       const { payload, passphrase, warning } = await compressAndEncrypt(textToSend);
       if (warning) error = warning;
       transferStore.openSend(payload, passphrase);
+      // Limpa cópia local do passphrase após transferir para o store
+      wipeMemory(passphrase);
     } catch (err: any) {
       error = 'Falha ao encriptar: ' + (err.message || 'Erro desconhecido');
+    } finally {
+      isSending = false;
     }
   }
 

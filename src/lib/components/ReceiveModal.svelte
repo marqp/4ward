@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { decompressAndDetokenize } from '../core/compression';
   import { decryptData } from '../core/crypto';
   import { PASSPHRASE_LENGTH } from '../core/wordlist';
+  import { wipeMemory } from '../utils/memory';
   import PassphraseInput from './PassphraseInput.svelte';
   import ScanView from './ReceiveModal/ScanView.svelte';
   import CodeView from './ReceiveModal/CodeView.svelte';
@@ -44,13 +44,17 @@
 
     let text: string;
     try {
-      const decrypted = await decryptData(data, receivePassphrase);
-      text = decompressAndDetokenize(decrypted);
+      // decryptData já descomprime internamente (compression embutida no worker)
+      text = await decryptData(data, receivePassphrase);
     } catch {
       receiveError = 'Falha ao descriptografar. Verifique a chave de acesso.';
       isProcessing = false;
       return;
     }
+
+    // Limpa passphrase da memória após uso
+    wipeMemory(receivePassphrase);
+    receivePassphrase = [];
 
     isProcessing = false;
     onReceived(text);

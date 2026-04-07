@@ -1,12 +1,11 @@
 /**
  * Transfer service — orchestrates the full send/receive flow.
  *
- * Encapsulates: compression, encryption, passphrase generation,
- * clipboard operations, and payload validation.
+ * Encapsulates: encryption (with internal compression), 
+ * passphrase generation, clipboard operations, and payload validation.
  * Keeps App.svelte thin (rendering only).
  */
 
-import { compressAndTokenize, decompressAndDetokenize } from '../core/compression';
 import { encryptData, decryptData } from '../core/crypto';
 import { WORDLIST, PASSPHRASE_LENGTH } from '../core/wordlist';
 
@@ -18,9 +17,9 @@ export async function compressAndEncrypt(text: string): Promise<{
   warning: string | null;
 }> {
   const passphrase = generatePassphrase();
-  const compressed = compressAndTokenize(text);
-  const warning = validatePayloadSize(compressed);
-  const payload = await encryptData(compressed, passphrase);
+  const payload = await encryptData(text, passphrase);
+  // Valida o tamanho real do payload comprimido+criptografado
+  const warning = validatePayloadSize(payload.length);
   return { payload, passphrase, warning };
 }
 
@@ -34,9 +33,12 @@ export function generatePassphrase(): string[] {
   return words;
 }
 
-export function validatePayloadSize(compressed: Uint8Array): string | null {
-  if (compressed.length > 10240) {
-    return 'Aviso: O texto é muito longo (>10KB após compressão). A transmissão pode ser lenta.';
+// Threshold: QR codes acima de ~3KB tornam-se lentos para transmitir via Fountain/QR
+const QR_PAYLOAD_THRESHOLD = 4096;
+
+export function validatePayloadSize(encryptedSize: number): string | null {
+  if (encryptedSize > QR_PAYLOAD_THRESHOLD) {
+    return 'Aviso: O payload é grande. A transmissão via QR Code pode ser lenta.';
   }
   return null;
 }
@@ -47,8 +49,7 @@ export async function decryptAndDecompress(
   data: Uint8Array,
   passphrase: string[],
 ): Promise<string> {
-  const decrypted = await decryptData(data, passphrase);
-  return decompressAndDetokenize(decrypted);
+  return decryptData(data, passphrase);
 }
 
 // ─── Clipboard ───

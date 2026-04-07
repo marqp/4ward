@@ -4,12 +4,15 @@ import { encryptData as encryptLocal, decryptData as decryptLocal } from './cryp
 
 let worker: Worker | null = null;
 let messageId = 0;
-const callbacks = new Map<number, { resolve: (val: Uint8Array) => void; reject: (err: any) => void }>();
+const callbacks = new Map<number, { resolve: (val: any) => void; reject: (err: any) => void }>();
 
-function getWorker() {
-  if (typeof window === 'undefined') {
-      return null; // SSR / Node test fallback
-  }
+function isWorkerAvailable(): boolean {
+  return typeof Worker !== 'undefined' && typeof window !== 'undefined';
+}
+
+function getWorker(): Worker | null {
+  if (!isWorkerAvailable()) return null;
+
   if (!worker) {
     worker = new Worker(new URL('./crypto.worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (e) => {
@@ -18,12 +21,11 @@ function getWorker() {
       if (cb) {
         callbacks.delete(id);
         if (error) cb.reject(new Error(error));
-        else cb.resolve(result instanceof Uint8Array ? result : new Uint8Array(result));
+        else cb.resolve(result);
       }
     };
     worker.onerror = (err) => {
       console.error('Worker error:', err);
-      // Reject all pending callbacks on fatal worker error
       callbacks.forEach((cb) => cb.reject(new Error('Crypto worker failed to load or crashed')));
       callbacks.clear();
       worker = null;
@@ -32,21 +34,18 @@ function getWorker() {
   return worker;
 }
 
-export async function encryptData(data: Uint8Array, passphraseWords: string[]): Promise<Uint8Array> {
+export async function encryptData(text: string, passphraseWords: string[]): Promise<Uint8Array> {
   const w = getWorker();
-  if (!w) return encryptLocal(data, passphraseWords);
+  if (!w) return encryptLocal(text, passphraseWords);
 
   return new Promise((resolve, reject) => {
     const id = messageId++;
     callbacks.set(id, { resolve, reject });
-    const dataCopy = new Uint8Array(data);
-    // Svelte 5 usa Proxies para estado ($state), que não podem ser clonados pelo postMessage
-    const cleanPassphrase = [...passphraseWords];
-    w.postMessage({ id, type: 'encrypt', data: dataCopy, passphraseWords: cleanPassphrase }, [dataCopy.buffer]);
+    w.postMessage({ id, type: 'encrypt', data: text, passphraseWords: [...passphraseWords] });
   });
 }
 
-export async function decryptData(encryptedData: Uint8Array, passphraseWords: string[]): Promise<Uint8Array> {
+export async function decryptData(encryptedData: Uint8Array, passphraseWords: string[]): Promise<string> {
   const w = getWorker();
   if (!w) return decryptLocal(encryptedData, passphraseWords);
 
@@ -54,10 +53,6 @@ export async function decryptData(encryptedData: Uint8Array, passphraseWords: st
     const id = messageId++;
     callbacks.set(id, { resolve, reject });
     const dataCopy = new Uint8Array(encryptedData);
-    const cleanPassphrase = [...passphraseWords];
-    w.postMessage({ id, type: 'decrypt', data: dataCopy, passphraseWords: cleanPassphrase }, [dataCopy.buffer]);
+    w.postMessage({ id, type: 'decrypt', data: dataCopy, passphraseWords: [...passphraseWords] }, [dataCopy.buffer]);
   });
 }
-
-// Re-export wipeMemory from its canonical location for backwards compatibility
-export { wipeMemory } from '../utils/memory';

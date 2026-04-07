@@ -1,5 +1,6 @@
 <script lang="ts">
   import { bytesToBase64 } from '../../utils/encoding';
+  import { wipeMemory } from '../../utils/memory';
   import {
     IconBiSendFill,
     IconBiQrCode,
@@ -16,6 +17,13 @@
     payload: Uint8Array;
     passphrase: string[];
   }>();
+
+  // Limpa passphrase da memória quando o componente é desmontado
+  $effect(() => {
+    return () => {
+      wipeMemory(passphrase);
+    };
+  });
 
   // ─── Base64 Copy ───
 
