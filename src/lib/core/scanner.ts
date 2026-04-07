@@ -15,7 +15,12 @@ export class Scanner {
     if (this.isRunning) return;
     this.onScanSuccessCallback = onScanSuccess;
     this.onScanFailureCallback = onScanFailure;
-    this.html5QrCode = new Html5Qrcode(this.elementId);
+    this.html5QrCode = new Html5Qrcode(this.elementId, {
+      verbose: false,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      }
+    });
     
     try {
       this.availableCameras = await Html5Qrcode.getCameras();
@@ -64,9 +69,6 @@ export class Scanner {
           return { width: qrboxSize, height: qrboxSize };
         },
         aspectRatio: 1.0,
-        experimentalFeatures: {
-          useBarCodeDetectorIfAvailable: true
-        }
       },
       this.onScanSuccessCallback,
       this.onScanFailureCallback
