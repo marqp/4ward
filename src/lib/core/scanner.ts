@@ -52,18 +52,21 @@ export class Scanner {
 
   private async launchScanner(cameraId: string | { facingMode: string }) {
     if (!this.html5QrCode) return;
-    
+
     await this.html5QrCode.start(
       cameraId,
       {
         fps: 60,
         qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
-          const minEdgePercentage = 0.85;
+          const minEdgePercentage = 0.70;
           const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
           const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
           return { width: qrboxSize, height: qrboxSize };
         },
         aspectRatio: 1.0,
+        experimentalFeatures: {
+          useBarCodeDetectorIfAvailable: true
+        }
       },
       this.onScanSuccessCallback,
       this.onScanFailureCallback

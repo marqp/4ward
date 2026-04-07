@@ -8,7 +8,7 @@ export class FountainEncoder {
   private encoder: UREncoder;
   private _isSinglePart: boolean;
 
-  constructor(payload: Uint8Array, fragmentSize: number = 800) {
+  constructor(payload: Uint8Array, fragmentSize: number = 1000) {
     if (!payload || payload.length === 0) {
       throw new Error("Payload vazio passado para o codificador UR");
     }

@@ -17,7 +17,7 @@
 
     let encoder: FountainEncoder;
     try {
-      encoder = new FountainEncoder(payload, 800);
+      encoder = new FountainEncoder(payload, 1000);
     } catch (err: any) {
       error = 'Erro no codificador: ' + err.message;
       return;
@@ -42,7 +42,7 @@
 
     updateFrame();
     if (!isStatic) {
-      intervalId = setInterval(updateFrame, 250);
+      intervalId = setInterval(updateFrame, 450);
     }
 
     return () => { if (intervalId) clearInterval(intervalId); };
