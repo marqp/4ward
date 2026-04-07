@@ -2,11 +2,13 @@
   "name": "4ward",
   "private": true,
   "version": "0.0.0",
+  "packageManager": "pnpm@10.28.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest run",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
