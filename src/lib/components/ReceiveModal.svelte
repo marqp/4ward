@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { decryptData } from '../core/crypto';
   import { PASSPHRASE_LENGTH } from '../core/wordlist';
   import { wipeMemory } from '../utils/memory';
@@ -49,10 +50,13 @@
     } catch {
       receiveError = 'Falha ao descriptografar. Verifique a chave de acesso.';
       isProcessing = false;
+      // Limpa passphrase mesmo em caso de erro
+      wipeMemory(receivePassphrase);
+      receivePassphrase = [];
       return;
     }
 
-    // Limpa passphrase da memória após uso
+    // Limpa passphrase da memória após uso bem-sucedido
     wipeMemory(receivePassphrase);
     receivePassphrase = [];
 
@@ -63,6 +67,11 @@
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') onClose();
   }
+
+  // Limpa passphrase se o modal for fechado antes de completar
+  onDestroy(() => {
+    wipeMemory(receivePassphrase);
+  });
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

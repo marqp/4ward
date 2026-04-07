@@ -2,9 +2,12 @@
  * Securely overwrites the contents of a TypedArray or an Array of strings
  * in memory to mitigate extraction from RAM after use.
  *
- * NOTE: This is a mitigation, not a guarantee. The JS garbage collector
- * may have created copies of the data in prior heap generations or internal
- * buffers. True secure memory wipe would require WebAssembly with mlock().
+ * Strategy:
+ *  - Uint8Array: two-pass overwrite — first with random bytes (to foil
+ *    simple memory forensics), then zeros (for deterministic cleanup).
+ *  - string[]: each string reference is replaced with an empty string.
+ *    Note: original string data may still linger in the JS heap / GC;
+ *    true secure memory would require WebAssembly with mlock().
  */
 export function wipeMemory(data: Uint8Array | string[] | null | undefined): void {
   if (!data) return;

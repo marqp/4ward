@@ -1,13 +1,43 @@
 /**
  * Transfer service — orchestrates the full send/receive flow.
  *
- * Encapsulates: encryption (with internal compression), 
+ * Encapsulates: encryption (with internal compression),
  * passphrase generation, clipboard operations, and payload validation.
  * Keeps App.svelte thin (rendering only).
  */
 
+import { deflateSync, strToU8 } from 'fflate';
+import { DICTIONARY_BIN } from '../core/dictionary';
 import { encryptData, decryptData } from '../core/crypto';
 import { WORDLIST, PASSPHRASE_LENGTH } from '../core/wordlist';
+
+// Threshold: QR codes com payload > 4KB geram muitos fragments no Fountain
+// encoder (fragmentSize=1000 no QrDisplay). Cada fragment adicional
+// aumenta o tempo de transmissão linearmente. 4KB ≈ 5 fragments, que
+// a ~450ms/fragment = ~2.3s — ainda aceitável. Acima disso, a UX degrada.
+const QR_PAYLOAD_THRESHOLD = 4096;
+// Overhead criptográfico: salt(16) + iv(12) + auth tag(16)
+const CRYPTO_OVERHEAD = 44;
+
+/**
+ * Estimate encrypted payload size from raw text — fast enough for reactive typing.
+ * Returns the estimated total byte size (compressed + encrypted overhead).
+ */
+export function estimatePayloadSize(text: string): number {
+  if (!text) return 0;
+  const compressed = deflateSync(strToU8(text), {
+    level: 9,
+    dictionary: DICTIONARY_BIN
+  });
+  return compressed.length + CRYPTO_OVERHEAD;
+}
+
+export function validatePayloadSize(encryptedSize: number): string | null {
+  if (encryptedSize > QR_PAYLOAD_THRESHOLD) {
+    return 'Aviso: O payload é grande. A transmissão via QR Code pode ser lenta.';
+  }
+  return null;
+}
 
 // ─── Send flow ───
 
@@ -18,7 +48,6 @@ export async function compressAndEncrypt(text: string): Promise<{
 }> {
   const passphrase = generatePassphrase();
   const payload = await encryptData(text, passphrase);
-  // Valida o tamanho real do payload comprimido+criptografado
   const warning = validatePayloadSize(payload.length);
   return { payload, passphrase, warning };
 }
@@ -31,16 +60,6 @@ export function generatePassphrase(): string[] {
     words.push(WORDLIST[array[i] % WORDLIST.length]);
   }
   return words;
-}
-
-// Threshold: QR codes acima de ~3KB tornam-se lentos para transmitir via Fountain/QR
-const QR_PAYLOAD_THRESHOLD = 4096;
-
-export function validatePayloadSize(encryptedSize: number): string | null {
-  if (encryptedSize > QR_PAYLOAD_THRESHOLD) {
-    return 'Aviso: O payload é grande. A transmissão via QR Code pode ser lenta.';
-  }
-  return null;
 }
 
 // ─── Receive flow ───

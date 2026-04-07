@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { bytesToBase64 } from '../../utils/encoding';
   import { wipeMemory } from '../../utils/memory';
   import {
@@ -19,10 +20,8 @@
   }>();
 
   // Limpa passphrase da memória quando o componente é desmontado
-  $effect(() => {
-    return () => {
-      wipeMemory(passphrase);
-    };
+  onDestroy(() => {
+    wipeMemory(passphrase);
   });
 
   // ─── Base64 Copy ───

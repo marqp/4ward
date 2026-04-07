@@ -1,8 +1,8 @@
 <script lang="ts">
   import { loadText, saveText, clearText } from './lib/stores/textStore';
   import { transferStore } from './lib/stores/transferStore.svelte';
-  import { compressAndEncrypt, copyToClipboard, decryptAndDecompress } from './lib/services/transferService';
-  import { wipeMemory } from './lib/utils/memory';
+  import { compressAndEncrypt, copyToClipboard } from './lib/services/transferService';
+  import { estimatePayloadSize, validatePayloadSize } from './lib/services/transferService';
   import Editor from './lib/components/Editor/Editor.svelte';
   import SendModal from './lib/components/SendModal.svelte';
   import ReceiveModal from './lib/components/ReceiveModal.svelte';
@@ -10,12 +10,40 @@
 
   // ─── Local UI state only ───
   let textToSend = $state(loadText());
+  let sizeWarning = $state<string | null>(null);
   let error = $state('');
   let showWhyModal = $state(false);
   let isSending = $state(false);
+  let skipSave = $state(false);
 
   // ─── Persistence ───
-  $effect(() => { saveText(textToSend); });
+  $effect(() => {
+    if (skipSave) { skipSave = false; return; }
+    saveText(textToSend);
+  });
+
+  // ─── Reactive payload size warning (200ms cooldown) ───
+  let sizeCheckTimer: ReturnType<typeof setTimeout> | null = null;
+
+  $effect(() => {
+    // Cancel previous timer
+    if (sizeCheckTimer) { clearTimeout(sizeCheckTimer); sizeCheckTimer = null; }
+
+    const text = textToSend.trim();
+    if (!text) {
+      sizeWarning = null;
+      return;
+    }
+
+    sizeCheckTimer = setTimeout(() => {
+      const estimatedSize = estimatePayloadSize(text);
+      sizeWarning = validatePayloadSize(estimatedSize);
+      sizeCheckTimer = null;
+    }, 200);
+  });
+
+  // Error takes priority over sizeWarning
+  let displayError = $derived(error || sizeWarning || '');
 
   // ─── Deep Linking (#porque) ───
   $effect(() => {
@@ -35,8 +63,8 @@
       const { payload, passphrase, warning } = await compressAndEncrypt(textToSend);
       if (warning) error = warning;
       transferStore.openSend(payload, passphrase);
-      // Limpa cópia local do passphrase após transferir para o store
-      wipeMemory(passphrase);
+      // NÃO limpar aqui — a passphrase é a mesma referência do store.
+      // A limpeza é feita pelo transferStore.closeModal() e onDestroy do SendPanel.
     } catch (err: any) {
       error = 'Falha ao encriptar: ' + (err.message || 'Erro desconhecido');
     } finally {
@@ -45,9 +73,16 @@
   }
 
   async function handleReceived(text: string) {
+    // Não salvar texto recebido no localStorage (dados sensíveis)
+    skipSave = true;
     textToSend = text;
     transferStore.closeModal();
-    await copyToClipboard(text);
+    const ok = await copyToClipboard(text);
+    // Limpar o campo após copiar para não deixar rastro visível
+    setTimeout(() => {
+      textToSend = '';
+      clearText();
+    }, ok ? 2000 : 500);
   }
 
   async function handleCopy() {
@@ -90,7 +125,7 @@
   <!-- Editor -->
   <Editor
     bind:textToSend
-    error={error}
+    error={displayError}
     onSend={handleSend}
     onReceive={() => transferStore.openReceive()}
     onCopy={handleCopy}
