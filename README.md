@@ -30,7 +30,7 @@ Profissionais de saúde às vezes usam blocos de nota online para transferir inf
 - [Tailwind CSS 4](https://tailwindcss.com/)
 - [Vite 8](https://vitejs.dev/)
 - AES-GCM 256-bit via Web Crypto API
-- [Fountain Codes](https://github.com/ngrave/bc-ur) para QR sequencial
+- [Fountain Codes](https://github.com/ngraveio/bc-ur) para QR sequencial
 - PWA (instalável, funciona offline)
 
 ## Desenvolvimento
