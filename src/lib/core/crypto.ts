@@ -1,6 +1,7 @@
 // src/lib/core/crypto.ts
 
 import { encryptData as encryptLocal, decryptData as decryptLocal } from './crypto.worker';
+import type { WorkerRequest, WorkerResponse } from './crypto.types';
 
 let worker: Worker | null = null;
 let messageId = 0;
@@ -15,7 +16,7 @@ function getWorker(): Worker | null {
 
   if (!worker) {
     worker = new Worker(new URL('./crypto.worker.ts', import.meta.url), { type: 'module' });
-    worker.onmessage = (e) => {
+    worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
       const { id, result, error } = e.data;
       const cb = callbacks.get(id);
       if (cb) {
@@ -54,7 +55,8 @@ export async function encryptData(text: string, passphraseWords: string[]): Prom
       reject: (err) => { clearTimeout(timeout); reject(err); } 
     });
 
-    w.postMessage({ id, type: 'encrypt', data: text, passphraseWords: [...passphraseWords] });
+    const msg: WorkerRequest = { id, type: 'encrypt', data: text, passphraseWords: [...passphraseWords] };
+    w.postMessage(msg);
   });
 }
 
@@ -79,6 +81,7 @@ export async function decryptData(encryptedData: Uint8Array, passphraseWords: st
     });
 
     const dataCopy = new Uint8Array(encryptedData);
-    w.postMessage({ id, type: 'decrypt', data: dataCopy, passphraseWords: [...passphraseWords] }, [dataCopy.buffer]);
+    const msg: WorkerRequest = { id, type: 'decrypt', data: dataCopy, passphraseWords: [...passphraseWords] };
+    w.postMessage(msg, [dataCopy.buffer]);
   });
 }

@@ -1,6 +1,7 @@
 // src/lib/core/crypto.worker.ts
 import { deflateSync, inflateSync, strToU8, strFromU8 } from 'fflate';
 import { DICTIONARY_BIN } from './dictionary';
+import type { WorkerRequest, WorkerResponse } from './crypto.types';
 
 const ITERATIONS = 600000;
 
@@ -71,22 +72,22 @@ export async function decryptData(encryptedData: Uint8Array, passphraseWords: st
 }
 
 if (typeof self !== 'undefined' && typeof window === 'undefined') {
-  self.onmessage = async (e: MessageEvent) => {
+  self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
     const { id, type, data, passphraseWords } = e.data;
     try {
-      let result: Uint8Array | string;
       if (type === 'encrypt') {
-        result = await encryptData(data, passphraseWords);
-        self.postMessage({ id, result }, { transfer: [(result as Uint8Array).buffer] } as any);
+        const result = await encryptData(data, passphraseWords);
+        const response: WorkerResponse = { id, result };
+        self.postMessage(response, { transfer: [result.buffer] } as any);
       } else if (type === 'decrypt') {
-        result = await decryptData(data, passphraseWords);
-        self.postMessage({ id, result });
-      } else {
-        throw new Error(`Unknown type: ${type}`);
+        const result = await decryptData(data, passphraseWords);
+        const response: WorkerResponse = { id, result };
+        self.postMessage(response);
       }
     } catch (error: any) {
       const errMsg = error.message || error.toString() || 'Worker Error';
-      self.postMessage({ id, error: errMsg });
+      const response: WorkerResponse = { id, error: errMsg };
+      self.postMessage(response);
     }
   };
 }
