@@ -41,7 +41,7 @@
   </div>
 
   {#if errorMsg}
-    <div class="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 py-2.5 px-4 text-sm rounded-xl mt-3 mb-3 animate-fade-in flex items-center gap-2 shadow-lg">
+    <div role="alert" aria-live="assertive" class="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 py-2.5 px-4 text-sm rounded-xl mt-3 mb-3 animate-fade-in flex items-center gap-2 shadow-lg">
       <IconBiExclamationCircleFill />{errorMsg}
     </div>
   {/if}

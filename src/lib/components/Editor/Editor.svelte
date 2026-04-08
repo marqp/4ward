@@ -6,6 +6,7 @@
   let {
     textToSend = $bindable(),
     error,
+    isProcessing = false,
     onSend,
     onReceive,
     onCopy,
@@ -13,6 +14,7 @@
   } = $props<{
     textToSend: string;
     error: string;
+    isProcessing?: boolean;
     onSend: () => void;
     onReceive: () => void;
     onCopy: () => void;
@@ -38,10 +40,10 @@
   {@render footerDisclaimer()}
 </div>
 
-<EditorFABs {onSend} {onReceive} canSend={!!textToSend.trim()} />
+<EditorFABs {onSend} {onReceive} canSend={!!textToSend.trim()} {isProcessing} />
 
 {#snippet errorMessage(msg: string)}
-  <div class="mt-4 bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 rounded-2xl py-3 px-4 animate-fade-in flex items-center gap-3 shadow-lg">
+  <div role="alert" aria-live="assertive" class="mt-4 bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 rounded-2xl py-3 px-4 animate-fade-in flex items-center gap-3 shadow-lg">
     <IconBiExclamationTriangleFill class="text-lg inline-block" />{msg}
   </div>
 {/snippet}

@@ -41,7 +41,19 @@ export async function encryptData(text: string, passphraseWords: string[]): Prom
   return new Promise((resolve, reject) => {
     const id = messageId % 1_000_000;
     messageId = id + 1;
-    callbacks.set(id, { resolve, reject });
+
+    const timeout = setTimeout(() => {
+      if (callbacks.has(id)) {
+        callbacks.delete(id);
+        reject(new Error('Tempo limite excedido na criptografia. Seu dispositivo pode ser lento ou estar sem memória.'));
+      }
+    }, 30000);
+
+    callbacks.set(id, { 
+      resolve: (val) => { clearTimeout(timeout); resolve(val); }, 
+      reject: (err) => { clearTimeout(timeout); reject(err); } 
+    });
+
     w.postMessage({ id, type: 'encrypt', data: text, passphraseWords: [...passphraseWords] });
   });
 }
@@ -53,7 +65,19 @@ export async function decryptData(encryptedData: Uint8Array, passphraseWords: st
   return new Promise((resolve, reject) => {
     const id = messageId % 1_000_000;
     messageId = id + 1;
-    callbacks.set(id, { resolve, reject });
+
+    const timeout = setTimeout(() => {
+      if (callbacks.has(id)) {
+        callbacks.delete(id);
+        reject(new Error('Tempo limite excedido na descriptografia. Seu dispositivo pode ser lento ou estar sem memória.'));
+      }
+    }, 30000);
+
+    callbacks.set(id, { 
+      resolve: (val) => { clearTimeout(timeout); resolve(val); }, 
+      reject: (err) => { clearTimeout(timeout); reject(err); } 
+    });
+
     const dataCopy = new Uint8Array(encryptedData);
     w.postMessage({ id, type: 'decrypt', data: dataCopy, passphraseWords: [...passphraseWords] }, [dataCopy.buffer]);
   });

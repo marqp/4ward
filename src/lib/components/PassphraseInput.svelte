@@ -4,25 +4,44 @@
   let { onComplete } = $props<{ onComplete: (words: string[]) => void }>();
 
   let words = $state<string[]>(Array(PASSPHRASE_LENGTH).fill(''));
+  let activeIndex = $state<number | null>(null);
+  let activeSuggestions = $state<string[]>([]);
 
-  function getSuggestions(input: string): string[] {
-    if (!input) return [];
-    const prefix = input.toLowerCase().trim();
-    return WORDLIST.filter(w => w.startsWith(prefix)).slice(0, 8);
+  function updateSuggestions(value: string) {
+    if (!value) {
+      activeSuggestions = [];
+      return;
+    }
+    const prefix = value.toLowerCase().trim();
+    activeSuggestions = WORDLIST.filter(w => w.startsWith(prefix)).slice(0, 8);
   }
 
   function handleInput(index: number, value: string) {
     words[index] = value;
-    const suggestions = getSuggestions(value);
+    updateSuggestions(value);
 
     if (value.length >= 2) {
-      if (suggestions.length === 1) {
-        words[index] = suggestions[0];
+      if (activeSuggestions.length === 1) {
+        words[index] = activeSuggestions[0];
+        activeSuggestions = [];
         focusNext(index);
       } else if (WORDLIST.includes(value.toLowerCase().trim())) {
+        activeSuggestions = [];
         focusNext(index);
       }
     }
+  }
+
+  function handleFocus(index: number) {
+    activeIndex = index;
+    updateSuggestions(words[index]);
+  }
+
+  function handleBlur(index: number) {
+    // Delay hiding suggestions to allow clicks to register
+    setTimeout(() => {
+      if (activeIndex === index) activeIndex = null;
+    }, 150);
   }
 
   function focusNext(index: number) {
@@ -36,6 +55,7 @@
 
   function handleSelect(index: number, word: string) {
     words[index] = word;
+    activeSuggestions = [];
     focusNext(index);
   }
 
@@ -71,22 +91,24 @@
   });
 </script>
 
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mb-2">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
   {#each words as word, index}
-    <div class="relative min-w-[110px]">
+    <div class="relative w-full">
       <input
         id={`word-${index}`}
         type="text"
-        class="w-full text-center bg-white/5 backdrop-blur-md border border-white/20 text-white placeholder-white/30 rounded-full shadow-inner font-medium px-4 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-sm h-11 tracking-wide"
+        class="w-full text-center bg-white/5 backdrop-blur-md border border-white/20 text-white placeholder-white/30 rounded-full shadow-inner font-medium px-2 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-sm h-11 tracking-wide"
         placeholder={`${index + 1}`}
         value={words[index]}
         oninput={(e) => handleInput(index, e.currentTarget.value)}
+        onfocus={() => handleFocus(index)}
+        onblur={() => handleBlur(index)}
         onpaste={(e) => handlePaste(index, e)}
         autocomplete="off"
       />
-      {#if words[index].length > 0 && !WORDLIST.includes(words[index])}
-        <ul class="absolute w-full mt-2 bg-slate-800/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden z-50 text-sm" style="top: 100%; left: 0; min-width: 160px;">
-          {#each getSuggestions(words[index]) as suggestion}
+      {#if activeIndex === index && activeSuggestions.length > 0 && !WORDLIST.includes(words[index])}
+        <ul class="absolute w-full mt-2 bg-slate-800/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden z-50 text-sm" style="top: 100%; left: 0; min-width: 140px;">
+          {#each activeSuggestions as suggestion}
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <li class="py-2.5 px-4 cursor-pointer font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors border-b border-white/5 last:border-0" onclick={() => handleSelect(index, suggestion)}>

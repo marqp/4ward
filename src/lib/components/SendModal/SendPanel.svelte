@@ -26,18 +26,22 @@
 
   // ─── Base64 Copy ───
 
-  let compactString = $derived(bytesToBase64(payload));
   let copyStatus = $state('Copiar código');
   let copyErrorMsg = $state('');
+  
+  // Create a tiny preview that won't block the thread during reactivity
+  let base64Preview = $derived(bytesToBase64(payload.slice(0, 48)) + '...');
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(compactString);
+      // Calculate full base64 ONLY when user clicks copy
+      const fullBase64 = bytesToBase64(payload);
+      await navigator.clipboard.writeText(fullBase64);
       copyStatus = 'Copiado!';
       copyErrorMsg = '';
       setTimeout(() => copyStatus = 'Copiar código', 2000);
     } catch {
-      copyErrorMsg = 'Selecione o texto manualmente.';
+      copyErrorMsg = 'Falha ao copiar automaticamente.';
       copyStatus = 'Falha ao copiar';
       setTimeout(() => { copyStatus = 'Copiar código'; copyErrorMsg = ''; }, 3000);
     }
@@ -90,7 +94,7 @@
       <p class="text-white/60 text-sm leading-relaxed mb-4 pl-1">Envie por e-mail, WhatsApp ou Invertexto. Seguro — só quem tem a chave de acesso pode ler.</p>
 
       <div class="bg-black/40 rounded-2xl p-4 mb-4 border border-white/10 shadow-inner relative group">
-        <textarea readonly class="w-full bg-transparent border-0 p-0 text-xs text-white/50 font-mono resize-none focus:outline-none break-all" rows="3" value={compactString}></textarea>
+        <textarea readonly class="w-full bg-transparent border-0 p-0 text-xs text-white/50 font-mono resize-none focus:outline-none break-all" rows="3" value={base64Preview}></textarea>
       </div>
 
       <button class="w-full py-3.5 bg-indigo-500/80 hover:bg-indigo-500 text-white font-semibold shadow-lg rounded-2xl flex items-center justify-center gap-2 transition-all text-sm border border-indigo-400/30 backdrop-blur-sm" onclick={handleCopy}>
@@ -103,7 +107,7 @@
         {/if}
         {copyStatus}
       </button>
-      {#if copyErrorMsg}<p class="text-rose-400 text-xs text-center mt-3 mb-0">{copyErrorMsg}</p>{/if}
+      {#if copyErrorMsg}<p role="alert" aria-live="assertive" class="text-rose-400 text-xs text-center mt-3 mb-0">{copyErrorMsg}</p>{/if}
     </div>
   </div>
 

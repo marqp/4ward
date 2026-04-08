@@ -118,6 +118,7 @@
   <Editor
     bind:textToSend
     error={displayError}
+    isProcessing={isSending}
     onSend={handleSend}
     onReceive={() => transferStore.openReceive()}
     onCopy={handleCopy}

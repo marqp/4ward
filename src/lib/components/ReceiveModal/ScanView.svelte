@@ -29,7 +29,7 @@
     <IconBiArrowLeft />Voltar
   </button>
   {#if error}
-    <div class="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 p-4 rounded-2xl mt-6 animate-fade-in flex items-center gap-3 shadow-lg">
+    <div role="alert" aria-live="assertive" class="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 p-4 rounded-2xl mt-6 animate-fade-in flex items-center gap-3 shadow-lg">
       <IconBiExclamationTriangleFill class="text-xl" />
       <span class="text-sm font-medium leading-relaxed">{error}</span>
     </div>
