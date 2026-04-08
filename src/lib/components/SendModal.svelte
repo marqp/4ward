@@ -40,17 +40,19 @@
 
     <div class="flex flex-col lg:flex-row h-full overflow-hidden text-white w-full lg:min-w-[800px]">
       <!-- QR Area -->
-      <div class="bg-black/30 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/10 h-full flex-1 min-w-[300px] min-h-0 relative">
+      <div class="bg-black/30 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/10 h-[45vh] lg:h-full shrink-0 lg:flex-1 min-h-0 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 pointer-events-none"></div>
-        <div class="w-full h-full flex items-center justify-center p-6 md:p-10 z-10">
-          <div class="w-full h-full flex items-center justify-center max-w-[500px] aspect-square">
+        <div class="w-full h-full flex items-center justify-center p-4 sm:p-6 lg:p-10 z-10">
+          <div class="max-w-full max-h-full flex items-center justify-center aspect-square max-w-[400px] lg:max-w-[500px]">
             <QrDisplay {payload} />
           </div>
         </div>
       </div>
 
       <!-- Side Panel -->
-      <SendPanel {payload} {passphrase} />
+      <div class="w-full lg:w-[400px] lg:shrink-0 min-h-0 lg:h-full">
+        <SendPanel {payload} {passphrase} />
+      </div>
     </div>
   </div>
 </div>

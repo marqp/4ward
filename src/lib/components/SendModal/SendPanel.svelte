@@ -70,7 +70,7 @@
   }
 </script>
 
-<div class="flex flex-col bg-white/5 h-full w-full lg:w-[400px] shrink-0">
+<div class="flex flex-col bg-white/5 h-full w-full">
   <div class="overflow-y-auto flex-grow p-6 md:p-8 custom-scrollbar">
     <h3 class="font-bold text-xl mb-8 flex items-center gap-3 text-white">
       <IconBiSendFill class="text-indigo-400" /> Transferência
