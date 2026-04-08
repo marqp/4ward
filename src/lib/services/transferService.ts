@@ -10,6 +10,7 @@ import { deflateSync, strToU8 } from 'fflate';
 import { DICTIONARY_BIN } from '../core/dictionary';
 import { encryptData, decryptData } from '../core/crypto';
 import { WORDLIST, PASSPHRASE_LENGTH } from '../core/wordlist';
+import { transferStore } from '../stores/transferStore.svelte';
 
 // Threshold: QR codes com payload > 4KB geram muitos fragments no Fountain
 // encoder (fragmentSize=1000 no QrDisplay). Cada fragment adicional
@@ -50,6 +51,19 @@ export async function compressAndEncrypt(text: string): Promise<{
   const payload = await encryptData(text, passphrase);
   const warning = validatePayloadSize(payload.length);
   return { payload, passphrase, warning };
+}
+
+/**
+ * Orchestrates the send action: encrypts data and opens the send modal via the store.
+ */
+export async function handleSendAction(text: string): Promise<{ error: string | null }> {
+  try {
+    const { payload, passphrase, warning } = await compressAndEncrypt(text);
+    transferStore.openSend(payload, passphrase);
+    return { error: warning };
+  } catch (err: any) {
+    return { error: 'Falha ao encriptar: ' + (err.message || 'Erro desconhecido') };
+  }
 }
 
 export function generatePassphrase(): string[] {

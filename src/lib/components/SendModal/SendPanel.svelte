@@ -43,10 +43,11 @@
     }
   }
 
-  // ─── Passphrase visibility ───
+  // ─── Passphrase visibility & copy ───
 
   let showPassphrase = $state(false);
   let hidePassphraseTimer: ReturnType<typeof setTimeout> | null = null;
+  let passphraseCopied = $state(false);
 
   function togglePassphrase() {
     showPassphrase = !showPassphrase;
@@ -54,6 +55,14 @@
     if (showPassphrase) {
       hidePassphraseTimer = setTimeout(() => { showPassphrase = false; }, 10000);
     }
+  }
+
+  async function handleCopyPassphrase() {
+    try {
+      await navigator.clipboard.writeText(passphrase.join(' ').toUpperCase());
+      passphraseCopied = true;
+      setTimeout(() => passphraseCopied = false, 2000);
+    } catch {}
   }
 </script>
 
@@ -104,13 +113,22 @@
       <p class="font-bold text-xs text-rose-400 uppercase tracking-widest m-0 flex items-center">
         <IconBiShieldLockFill class="mr-2" />Chave de Acesso
       </p>
-      <button class="text-white/50 hover:text-white transition-colors p-1" aria-label={showPassphrase ? 'Ocultar chave' : 'Mostrar chave'} onclick={togglePassphrase}>
-        {#if showPassphrase}
-          <IconBiEyeSlashFill class="text-lg" />
-        {:else}
-          <IconBiEyeFill class="text-lg" />
-        {/if}
-      </button>
+      <div class="flex items-center gap-1">
+        <button class="text-white/50 hover:text-white transition-colors p-1" aria-label="Copiar chave" title="Copiar chave" onclick={handleCopyPassphrase}>
+          {#if passphraseCopied}
+            <IconBiCheck2All class="text-lg text-emerald-400" />
+          {:else}
+            <IconBiClipboard class="text-lg" />
+          {/if}
+        </button>
+        <button class="text-white/50 hover:text-white transition-colors p-1" aria-label={showPassphrase ? 'Ocultar chave' : 'Mostrar chave'} title={showPassphrase ? 'Ocultar chave' : 'Mostrar chave'} onclick={togglePassphrase}>
+          {#if showPassphrase}
+            <IconBiEyeSlashFill class="text-lg" />
+          {:else}
+            <IconBiEyeFill class="text-lg" />
+          {/if}
+        </button>
+      </div>
     </div>
     <div class="bg-rose-500/10 p-4 rounded-2xl border border-rose-500/20 text-center flex items-center justify-center min-h-[64px] shadow-inner">
       <span class="font-mono uppercase font-bold text-rose-300 text-base leading-relaxed break-words transition-all" style="letter-spacing: {showPassphrase ? '2px' : '4px'}; opacity: {showPassphrase ? 1 : 0.8};">

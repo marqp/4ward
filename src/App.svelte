@@ -1,8 +1,7 @@
 <script lang="ts">
   import { loadText, saveText, clearText } from './lib/stores/textStore';
   import { transferStore } from './lib/stores/transferStore.svelte';
-  import { compressAndEncrypt, copyToClipboard } from './lib/services/transferService';
-  import { estimatePayloadSize, validatePayloadSize } from './lib/services/transferService';
+  import { handleSendAction, copyToClipboard, estimatePayloadSize, validatePayloadSize } from './lib/services/transferService';
   import Editor from './lib/components/Editor/Editor.svelte';
   import SendModal from './lib/components/SendModal.svelte';
   import ReceiveModal from './lib/components/ReceiveModal.svelte';
@@ -14,12 +13,17 @@
   let error = $state('');
   let showWhyModal = $state(false);
   let isSending = $state(false);
-  let skipSave = $state(false);
+  let isVolatile = $state(false);
 
   // ─── Persistence ───
   $effect(() => {
-    if (skipSave) { skipSave = false; return; }
+    if (isVolatile) return;
     saveText(textToSend);
+  });
+
+  // Reset volatile mode if text is manually cleared
+  $effect(() => {
+    if (textToSend === '') isVolatile = false;
   });
 
   // ─── Reactive payload size warning (200ms cooldown) ───
@@ -59,30 +63,17 @@
   async function handleSend() {
     if (!textToSend.trim() || isSending) return;
     isSending = true;
-    try {
-      const { payload, passphrase, warning } = await compressAndEncrypt(textToSend);
-      if (warning) error = warning;
-      transferStore.openSend(payload, passphrase);
-      // NÃO limpar aqui — a passphrase é a mesma referência do store.
-      // A limpeza é feita pelo transferStore.closeModal() e onDestroy do SendPanel.
-    } catch (err: any) {
-      error = 'Falha ao encriptar: ' + (err.message || 'Erro desconhecido');
-    } finally {
-      isSending = false;
-    }
+    const { error: sendError } = await handleSendAction(textToSend);
+    if (sendError) error = sendError;
+    isSending = false;
   }
 
   async function handleReceived(text: string) {
-    // Não salvar texto recebido no localStorage (dados sensíveis)
-    skipSave = true;
+    // Marcar como volátil: não salvar texto recebido no localStorage (dados sensíveis)
+    isVolatile = true;
     textToSend = text;
     transferStore.closeModal();
-    const ok = await copyToClipboard(text);
-    // Limpar o campo após copiar para não deixar rastro visível
-    setTimeout(() => {
-      textToSend = '';
-      clearText();
-    }, ok ? 2000 : 500);
+    await copyToClipboard(text);
   }
 
   async function handleCopy() {
@@ -95,6 +86,7 @@
   }
 
   function clearAll() {
+    isVolatile = false;
     clearText();
     textToSend = '';
     error = '';
