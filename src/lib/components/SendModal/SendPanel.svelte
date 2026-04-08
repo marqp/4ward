@@ -29,14 +29,12 @@
   let copyStatus = $state('Copiar código');
   let copyErrorMsg = $state('');
   
-  // Create a tiny preview that won't block the thread during reactivity
-  let base64Preview = $derived(bytesToBase64(payload.slice(0, 48)) + '...');
+  // Base64 completo para exibição e cópia manual
+  let compactString = $derived(bytesToBase64(payload));
 
   async function handleCopy() {
     try {
-      // Calculate full base64 ONLY when user clicks copy
-      const fullBase64 = bytesToBase64(payload);
-      await navigator.clipboard.writeText(fullBase64);
+      await navigator.clipboard.writeText(compactString);
       copyStatus = 'Copiado!';
       copyErrorMsg = '';
       setTimeout(() => copyStatus = 'Copiar código', 2000);
@@ -94,7 +92,7 @@
       <p class="text-white/60 text-sm leading-relaxed mb-4 pl-1">Envie por e-mail, WhatsApp ou Invertexto. Seguro — só quem tem a chave de acesso pode ler.</p>
 
       <div class="bg-black/40 rounded-2xl p-4 mb-4 border border-white/10 shadow-inner relative group">
-        <textarea readonly class="w-full bg-transparent border-0 p-0 text-xs text-white/50 font-mono resize-none focus:outline-none break-all" rows="3" value={base64Preview}></textarea>
+        <textarea readonly class="w-full bg-transparent border-0 p-0 text-xs text-white/50 font-mono resize-none focus:outline-none break-all" rows="3" value={compactString}></textarea>
       </div>
 
       <button class="w-full py-3.5 bg-indigo-500/80 hover:bg-indigo-500 text-white font-semibold shadow-lg rounded-2xl flex items-center justify-center gap-2 transition-all text-sm border border-indigo-400/30 backdrop-blur-sm" onclick={handleCopy}>
@@ -139,6 +137,9 @@
         {showPassphrase ? passphrase.join(' ').toUpperCase() : '•••• •••• •••• •••• •••• •••• •••• ••••'}
       </span>
     </div>
+    <p class="text-[10px] text-rose-400/50 mt-4 text-center leading-tight uppercase tracking-wider font-medium">
+      Guarde em um lugar seguro. Se perder a chave, <br/> não há como recuperar o texto original.
+    </p>
   </div>
 </div>
 
